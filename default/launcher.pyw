@@ -56,56 +56,6 @@ if mode == "offline":
         "gameDirectory": game_dir
     }
 
-# install minecraft
-minecraft_launcher_lib.install.install_minecraft_version(version, game_dir)
-
-# mods
-mods_src = os.path.join(script_dir, "mods")
-mods_dst = os.path.join(game_dir, "mods")
-os.makedirs(mods_dst, exist_ok=True)
-
-if os.path.isdir(mods_src):
-    for mod_file in os.listdir(mods_src):
-        if mod_file.endswith(".jar"):
-            shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
-
-# resourcepacks
-mods_src = os.path.join(script_dir, "resourcepacks")
-mods_dst = os.path.join(game_dir, "resourcepacks")
-os.makedirs(mods_dst, exist_ok=True)
-
-if os.path.isdir(mods_src):
-    for mod_file in os.listdir(mods_src):
-        if mod_file.endswith(".zip"):
-            shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
-
-# shaders
-mods_src = os.path.join(script_dir, "shaderpacks")
-mods_dst = os.path.join(game_dir, "shaderpacks")
-os.makedirs(mods_dst, exist_ok=True)
-
-if os.path.isdir(mods_src):
-    for mod_file in os.listdir(mods_src):
-        if mod_file.endswith(".zip"):
-            shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
-
-# worlds
-mods_src = os.path.join(script_dir, "saves")
-mods_dst = os.path.join(game_dir, "saves")
-os.makedirs(mods_dst, exist_ok=True)
-
-if os.path.isdir(mods_src):
-    for save_folder in os.listdir(mods_src):
-        src_path = os.path.join(mods_src, save_folder)
-        dst_path = os.path.join(mods_dst, save_folder)
-        if os.path.isdir(src_path):
-            if os.path.exists(dst_path):
-                shutil.rmtree(dst_path)
-            shutil.copytree(src_path, dst_path)
-
-cmd = minecraft_launcher_lib.command.get_minecraft_command(version, game_dir, options)
-subprocess.run(cmd)
-
 # Read data.cfg second line
 keep_data = False
 cfg_path = os.path.join(script_dir, "data.cfg")
@@ -114,6 +64,57 @@ if os.path.isfile(cfg_path):
         lines = f.readlines()
         if len(lines) > 1 and lines[1].strip().lower() == "y":
             keep_data = True
+
+# install minecraft
+minecraft_launcher_lib.install.install_minecraft_version(version, game_dir)
+
+if not keep_data:
+    # mods
+    mods_src = os.path.join(script_dir, "mods")
+    mods_dst = os.path.join(game_dir, "mods")
+    os.makedirs(mods_dst, exist_ok=True)
+    
+    if os.path.isdir(mods_src):
+        for mod_file in os.listdir(mods_src):
+            if mod_file.endswith(".jar"):
+                shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
+    
+    # resourcepacks
+    mods_src = os.path.join(script_dir, "resourcepacks")
+    mods_dst = os.path.join(game_dir, "resourcepacks")
+    os.makedirs(mods_dst, exist_ok=True)
+    
+    if os.path.isdir(mods_src):
+        for mod_file in os.listdir(mods_src):
+            if mod_file.endswith(".zip"):
+                shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
+    
+    # shaders
+    mods_src = os.path.join(script_dir, "shaderpacks")
+    mods_dst = os.path.join(game_dir, "shaderpacks")
+    os.makedirs(mods_dst, exist_ok=True)
+    
+    if os.path.isdir(mods_src):
+        for mod_file in os.listdir(mods_src):
+            if mod_file.endswith(".zip"):
+                shutil.copy2(os.path.join(mods_src, mod_file), mods_dst)
+    
+    # worlds
+    mods_src = os.path.join(script_dir, "saves")
+    mods_dst = os.path.join(game_dir, "saves")
+    os.makedirs(mods_dst, exist_ok=True)
+    
+    if os.path.isdir(mods_src):
+        for save_folder in os.listdir(mods_src):
+            src_path = os.path.join(mods_src, save_folder)
+            dst_path = os.path.join(mods_dst, save_folder)
+            if os.path.isdir(src_path):
+                if os.path.exists(dst_path):
+                    shutil.rmtree(dst_path)
+                shutil.copytree(src_path, dst_path)
+
+cmd = minecraft_launcher_lib.command.get_minecraft_command(version, game_dir, options)
+subprocess.run(cmd)
 
 # At the end, decide whether to delete .minecraft
 if not keep_data:
